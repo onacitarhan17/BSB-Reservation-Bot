@@ -16,7 +16,7 @@ afternoon = True
 link = "https://www.bsb-muenchen.de/recherche-und-service/besuche-vor-ort/lesesaelearbeitsplaetze/allgemeiner-lesesaal/arbeitsplatz-im-allgemeinen-lesesaal-buchen/"\
 
 def main():
-    global afternoon
+    global afternoon, morning
     # Open the browser and go to the link
     browser = webdriver.Chrome()
     browser.get(link)
@@ -31,16 +31,17 @@ def main():
         # if the login fails, refresh the page and try again
         browser.refresh()
     time.sleep(3)
+    while morning:
+        today = browser.find_element(By.CLASS_NAME, "event-calendar__day-today")
+        morning = morning_reserv(today, browser)
+        if morning:
+            browser.refresh()
+    # Turn back to calendar page
+    browser.get(link)
     while afternoon:
         today = browser.find_element(By.CLASS_NAME, "event-calendar__day-today")
         afternoon = afternoon_reserv(today, browser)
         if afternoon:
-            browser.refresh()
-    # TODO: Turn back to calendar page
-    while morning:
-        today = browser.find_element(By.CLASS_NAME, "event-calendar__day-today")
-        morning = afternoon_reserv(today, browser)
-        if morning:
             browser.refresh()
     time.sleep(3)
 
@@ -50,6 +51,7 @@ def afternoon_reserv(today, browser):
         afternoon_button = afternoon.find_element(By.CLASS_NAME, "js-register-button")
         afternoon_button.click()
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "firstname")))
+        fill_form(name, surname, email, browser)
         form_element = browser.find_element(By.CLASS_NAME, "js-send-form")
         form_element.submit()
         return False
@@ -63,6 +65,7 @@ def morning_reserv(today, browser):
         morning_button = morning.find_element(By.CLASS_NAME, "js-register-button")
         morning_button.click()
         WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "firstname")))
+        fill_form(name, surname, email, browser)
         form_element = browser.find_element(By.CLASS_NAME, "js-send-form")
         form_element.submit()
         return False
