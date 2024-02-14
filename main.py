@@ -12,6 +12,7 @@ username = "username"
 password = "password"
 morning = True
 afternoon = True
+lmu_login = True # TODO: implement non-LMU login
 
 link = "https://www.bsb-muenchen.de/recherche-und-service/besuche-vor-ort/lesesaelearbeitsplaetze/allgemeiner-lesesaal/arbeitsplatz-im-allgemeinen-lesesaal-buchen/"\
 
