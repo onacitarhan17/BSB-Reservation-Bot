@@ -12,7 +12,7 @@ username = "username"
 password = "password"
 morning = True
 afternoon = True
-lmu_login = True # TODO: implement non-LMU login
+lmu_login = True
 
 link = "https://www.bsb-muenchen.de/recherche-und-service/besuche-vor-ort/lesesaelearbeitsplaetze/allgemeiner-lesesaal/arbeitsplatz-im-allgemeinen-lesesaal-buchen/"\
 
@@ -25,12 +25,9 @@ def main():
     # Wait for the page to load
     WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "tab2")))
 
-    try:
-        # login
-        login(username, password, browser)
-    except:
-        # if the login fails, refresh the page and try again
-        browser.refresh()
+    # login
+    login(username, password, browser, lmu_login)
+
     time.sleep(3)
     while morning:
         today = browser.find_element(By.CLASS_NAME, "event-calendar__day-today")
@@ -83,17 +80,20 @@ def fill_form(name, surname, email, browser):
     # click the submit button
     form_element = browser.find_element(By.CLASS_NAME, "js-send-form")
     form_element.submit()
-
     return True
-def login(username, password, browser):
-    # Click the second tab (for LMU login)
-    browser.execute_script("document.getElementById('tab2').click();")
-    # enter the username and password
-    browser.find_element(By.ID, "lmu-id").send_keys(username)
-    browser.find_element(By.ID, "lmu-password").send_keys(password)
 
+def login(username, password, browser, lmu):
+    username_id = "lmu-id" if lmu else "usernumber"
+    password_id = "lmu-password" if lmu else "password"
+    button_id = "lmu-login" if lmu else "bsb-login"
+    if lmu:
+        # Click the second tab (for LMU login)
+        browser.execute_script("document.getElementById('tab2').click();")
+    # enter the username and password
+    browser.find_element(By.ID, username_id).send_keys(username)
+    browser.find_element(By.ID, password_id).send_keys(password)
     # click the login button with value "Anmelden"
-    form_element = browser.find_element(By.CLASS_NAME, "lmu-login")
+    form_element = browser.find_element(By.CLASS_NAME, button_id)
     form_element.submit()
     return True
 
